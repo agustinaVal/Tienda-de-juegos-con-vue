@@ -5,8 +5,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
 	state: {
-		juguetes: [
-			{
+		juguetes: [{
 				id: '001',
 				nombre: 'seiko',
 				stock: 100,
@@ -43,20 +42,35 @@ export default new Vuex.Store({
 				precio: 2000,
 			},
 		],
+		historialDeVentas: [],
 	},
 	mutations: {
 		DESCONTAR(state, payload) {
-			state.juguetes == state.juguetes.map((e) => {
+			state.juguetes ==
+				state.juguetes.map((e) => {
 					if (e.id == payload.trim()) {
 						e.stock--;
+						state.historialDeVentas.push(e);
 					}
 					return e;
 				});
 		},
 	},
 	actions: {
-		descontar({ commit }, payload) {
+		descontar({
+			commit
+		}, payload) {
 			commit('DESCONTAR', payload);
+		},
+	},
+	getters: {
+		productosConStock: (state) => {
+			return state.juguetes.filter((producto) => {
+				return producto.stock > 0;
+			});
+		},
+		productoDisponiblePorId: (state, getters) => (producto) => {
+			return getters.productosConStock.filter((p) => p.id == producto || p.nombre.includes(producto));
 		},
 	},
 });
